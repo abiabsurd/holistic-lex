@@ -1,0 +1,62 @@
+from django.shortcuts import get_object_or_404, render
+
+from biometrics.biometrics import (
+    get_bmr_multiple, ideal_protein, to_kg, basal_metabolic_rate, hamwi_ideal_weight,
+    comparison_percentage, thermic_effect_of_activity, thermic_effect_of_food,
+    total_energy_expenditure, proportion
+)
+from biometrics.models import Client, Entry
+
+
+def round_floats(v):
+    return round(v, 2) if isinstance(v, float) else v
+
+
+def client_metrics(request, pk=None):
+    client = get_object_or_404(Client, pk=pk)
+    entries = client.entries.order_by('date').values()
+    entry_field_names = {
+        f.name: f.verbose_name
+        for f in Entry._meta.get_fields() if f.name not in ('id', 'client', 'date')
+    }
+    dates = []
+    metrics = {}
+    for e in entries:
+        d = e['date']
+        dates.append(d)
+        for m in entry_field_names:
+            metric_data = metrics.setdefault(m, {})
+            metric_data[d] = e[m]
+
+        metrics.setdefault('Body Fat (lb)', {})[d] = proportion(e['weight'], e['body_fat'])
+        metrics.setdefault('Skeletal Muscle (lb)', {})[d] = proportion(
+            e['weight'], e['skeletal_muscle']
+        )
+        weight_in_kg = to_kg(e['weight'])
+        metrics.setdefault('Weight (kg)', {})[d] = weight_in_kg
+        metrics.setdefault('Ideal Daily Protein Intake (g)', {})[d] = ideal_protein(weight_in_kg)
+        bmr = basal_metabolic_rate(weight_in_kg, client.height, client.age)
+        metrics.setdefault('Basal Metabolic Rate (kcal)', {})[d] = bmr
+        metrics.setdefault('Hamwi Ideal Weight (lb)', {})[d] = client.ideal_weight
+        metrics.setdefault('Actual vs Ideal Weight (%)', {})[d] = comparison_percentage(
+            e['weight'], client.ideal_weight
+        )
+        tef = thermic_effect_of_food(bmr)
+        metrics.setdefault('Thermic Effect of Food', {})[d] = tef
+        try:
+            bmr_mult = get_bmr_multiple(e['activity_rating'])
+        except ValueError:
+            continue
+
+        tea = thermic_effect_of_activity(bmr, bmr_mult)
+        total_energy_expenditure(bmr, tea, tef)
+
+    context = {
+        'client': client,
+        'dates': dates,
+        'metrics': [
+            [entry_field_names.get(m, m)] + list(map(round_floats, (metrics[m][d] for d in dates)))
+            for m in metrics
+        ]
+    }
+    return render(request, 'client_metrics.html', context=context)

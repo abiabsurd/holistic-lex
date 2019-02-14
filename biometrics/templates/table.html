@@ -1,0 +1,24 @@
+<table class="table-responsive table-striped table-bordered table-sm">
+    <thead class="thead-dark">
+        <tr>
+            <th scope="col"></th>
+            {% for col_name in col_names %}
+                <th scope="col">{{ col_name }}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in rows %}
+            {% if row %}
+                <tr>
+                    <th scope="row">{{ row.0 }}</th>
+                    {% for v in row %}
+                        {% if not forloop.first %}
+                            <td>{% firstof v "no data" %}</td>
+                        {% endif %}
+                    {% endfor %}
+                </tr>
+            {% endif %}
+        {% endfor %}
+    </tbody>
+</table>

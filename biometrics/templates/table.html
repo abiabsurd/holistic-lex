@@ -14,7 +14,7 @@
                     <th scope="row">{{ row.0 }}</th>
                     {% for v in row %}
                         {% if not forloop.first %}
-                            <td>{% firstof v "no data" %}</td>
+                            <td>{% firstof v "[no data]" %}</td>
                         {% endif %}
                     {% endfor %}
                 </tr>

@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404, render
 
 from biometrics.biometrics import (
-    get_bmr_multiple, ideal_protein, to_kg, basal_metabolic_rate, hamwi_ideal_weight,
+    get_bmr_multiple, ideal_protein, to_kg, to_cm, basal_metabolic_rate, hamwi_ideal_weight,
     comparison_percentage, thermic_effect_of_activity, thermic_effect_of_food,
     total_energy_expenditure, proportion
 )
@@ -16,8 +16,9 @@ def client_metrics(request, pk=None):
     client = get_object_or_404(Client, pk=pk)
     entries = client.entries.order_by('date').values()
     entry_field_names = {
-        f.name: f.verbose_name
-        for f in Entry._meta.get_fields() if f.name not in ('id', 'client', 'date')
+        f.name: ' '.join(
+            (f.verbose_name.title(),) + (('({})'.format(f.help_text),) if f.help_text else tuple())
+        ) for f in Entry._meta.get_fields() if f.name not in ('id', 'client', 'date')
     }
     dates = []
     metrics = {}
@@ -35,21 +36,23 @@ def client_metrics(request, pk=None):
         weight_in_kg = to_kg(e['weight'])
         metrics.setdefault('Weight (kg)', {})[d] = weight_in_kg
         metrics.setdefault('Ideal Daily Protein Intake (g)', {})[d] = ideal_protein(weight_in_kg)
-        bmr = basal_metabolic_rate(weight_in_kg, client.height, client.age)
+        height_in_cm = to_cm(client.height)
+        bmr = basal_metabolic_rate(weight_in_kg, height_in_cm, client.age)
         metrics.setdefault('Basal Metabolic Rate (kcal)', {})[d] = bmr
-        metrics.setdefault('Hamwi Ideal Weight (lb)', {})[d] = client.ideal_weight
         metrics.setdefault('Actual vs Ideal Weight (%)', {})[d] = comparison_percentage(
             e['weight'], client.ideal_weight
         )
         tef = thermic_effect_of_food(bmr)
-        metrics.setdefault('Thermic Effect of Food', {})[d] = tef
+        metrics.setdefault('Thermic Effect of Food (kcal)', {})[d] = tef
         try:
             bmr_mult = get_bmr_multiple(e['activity_rating'])
         except ValueError:
             continue
 
         tea = thermic_effect_of_activity(bmr, bmr_mult)
-        total_energy_expenditure(bmr, tea, tef)
+        metrics.setdefault('Thermic Effect of Activity (kcal)', {})[d] = tea
+        tee = total_energy_expenditure(bmr, tea, tef)
+        metrics.setdefault('Total Energy Expenditure (kcal)', {})[d] = tee
 
     context = {
         'client': client,

@@ -15,8 +15,8 @@ class Client(models.Model):
     last_name = models.CharField(max_length=32)
     dob = models.DateField(verbose_name='date of birth')
     sex = models.CharField(max_length=1, choices=SEX_CHOICES.items())
-    height = models.FloatField(help_text='in inches')
-    usual_weight = models.PositiveSmallIntegerField(help_text='in lbs')
+    height = models.FloatField(help_text='inches')
+    usual_weight = models.PositiveSmallIntegerField(help_text='lbs')
     frame_type = models.CharField(
         max_length=1, choices=BODY_FRAME_TYPE_CHOICES.items(), help_text='based off wrist size'
     )
@@ -52,20 +52,20 @@ class Entry(models.Model):
     notes = models.TextField(null=True, blank=True)
 
     # OMRON MEASUREMENTS
-    weight = models.FloatField(help_text='in lbs')
+    weight = models.FloatField(help_text='lbs')
     bmi = models.FloatField(verbose_name='body mass index')
-    body_fat = models.FloatField(help_text='as %')
-    skeletal_muscle = models.FloatField(help_text='as %')
-    resting_metabolism = models.FloatField(help_text='in kcal')
+    body_fat = models.FloatField(help_text='%')
+    skeletal_muscle = models.FloatField(help_text='%')
+    resting_metabolism = models.FloatField(help_text='kcal')
     body_age = models.PositiveSmallIntegerField()
     visceral_fat_level = models.PositiveSmallIntegerField()
 
     # OTHERS
-    waist_circumference = models.FloatField(null=True, blank=True, help_text='in cm')
+    waist_circumference = models.FloatField(null=True, blank=True, help_text='cm')
     activity_rating = models.PositiveSmallIntegerField(
         null=True, blank=True, choices=enumerate(ACTIVITY_RATINGS)
     )
-    total_energy_intake = models.FloatField(null=True, blank=True, help_text='in kcal')
+    total_energy_intake = models.FloatField(null=True, blank=True, help_text='kcal')
 
     def __str__(self):
         return 'Entry from {}'.format(self.date)

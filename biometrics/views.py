@@ -37,7 +37,7 @@ def client_metrics(request, pk=None):
         metrics.setdefault('Weight (kg)', {})[d] = weight_in_kg
         metrics.setdefault('Ideal Daily Protein Intake (g)', {})[d] = ideal_protein(weight_in_kg)
         height_in_cm = to_cm(client.height)
-        bmr = basal_metabolic_rate(weight_in_kg, height_in_cm, client.age)
+        bmr = basal_metabolic_rate(weight_in_kg, height_in_cm, client.age, client.sex)
         metrics.setdefault('Basal Metabolic Rate (kcal)', {})[d] = bmr
         metrics.setdefault('Actual vs Ideal Weight (%)', {})[d] = comparison_percentage(
             e['weight'], client.ideal_weight

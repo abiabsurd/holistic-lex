@@ -38,9 +38,16 @@ def ideal_protein(weight_in_kg):
     return 0.8 * weight_in_kg
 
 
-def basal_metabolic_rate(weight_in_kg, height_in_cm, age):
+def basal_metabolic_rate(weight_in_kg, height_in_cm, age, sex):
     """in kcal"""
-    return 10 * weight_in_kg + 6.25 * height_in_cm - 5 * age - 161
+    if sex not in SEX_CHOICES:
+        raise ValueError('"{}" is not a valid choice from: {}'.format(sex, SEX_CHOICES))
+
+    sex_offset = {
+        'M': 5,
+        'F': -161
+    }
+    return 10 * weight_in_kg + 6.25 * height_in_cm - 5 * age + sex_offset[sex]
 
 
 def hamwi_ideal_weight(sex, height, body_frame_type):

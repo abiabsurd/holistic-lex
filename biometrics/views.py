@@ -58,8 +58,8 @@ def client_metrics(request, pk=None):
         'client': client,
         'dates': dates,
         'metrics': [
-            [entry_field_names.get(m, m)] + list(map(round_floats, (metrics[m][d] for d in dates)))
-            for m in metrics
+            [entry_field_names.get(m, m)] +
+            list(map(round_floats, (metrics[m].get(d) for d in dates))) for m in metrics
         ]
     }
     return render(request, 'client_metrics.html', context=context)

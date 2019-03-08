@@ -53,12 +53,12 @@ class Entry(models.Model):
 
     # OMRON MEASUREMENTS
     weight = models.FloatField(help_text='lbs')
-    bmi = models.FloatField(verbose_name='body mass index')
-    body_fat = models.FloatField(help_text='%')
-    skeletal_muscle = models.FloatField(help_text='%')
-    resting_metabolism = models.FloatField(help_text='kcal')
-    body_age = models.PositiveSmallIntegerField()
-    visceral_fat_level = models.PositiveSmallIntegerField()
+    bmi = models.FloatField(null=True, blank=True, verbose_name='body mass index')
+    body_fat = models.FloatField(null=True, blank=True, help_text='%')
+    skeletal_muscle = models.FloatField(null=True, blank=True, help_text='%')
+    resting_metabolism = models.FloatField(null=True, blank=True, help_text='kcal')
+    body_age = models.PositiveSmallIntegerField(null=True, blank=True)
+    visceral_fat_level = models.PositiveSmallIntegerField(null=True, blank=True)
 
     # OTHERS
     waist_circumference = models.FloatField(null=True, blank=True, help_text='cm')

@@ -1,4 +1,6 @@
+from django.core.serializers.json import DjangoJSONEncoder
 from django.shortcuts import get_object_or_404, render
+
 
 from biometrics.biometrics import (
     get_bmr_multiple, ideal_protein, to_kg, to_cm, basal_metabolic_rate,
@@ -6,6 +8,8 @@ from biometrics.biometrics import (
     total_energy_expenditure, proportion
 )
 from biometrics.models import Client, Entry
+
+json_encoder = DjangoJSONEncoder()
 
 
 def round_floats(v):
@@ -18,7 +22,7 @@ def client_metrics(request, pk=None):
     entry_field_names = {
         f.name: ' '.join(
             (f.verbose_name.title(),) + (('({})'.format(f.help_text),) if f.help_text else tuple())
-        ) for f in Entry._meta.get_fields() if f.name not in ('id', 'client', 'date')
+        ) for f in Entry._meta.get_fields() if f.name not in ('id', 'client', 'date', 'notes')
     }
     dates = []
     metrics = {}
@@ -56,11 +60,10 @@ def client_metrics(request, pk=None):
 
     context = {
         'client': client,
-        'dates': dates,
-        'metrics': [
+        'data': json_encoder.encode([['dates'] + dates] + [
             [entry_field_names.get(m, m)] +
             list(map(round_floats, (metrics[m].get(d) for d in dates))) for m in metrics
-        ]
+        ])
     }
 
     return render(request, 'client_metrics.html', context=context)

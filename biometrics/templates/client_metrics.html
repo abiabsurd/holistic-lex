@@ -2,7 +2,18 @@
 {% load static %}
 
 {% block css %}
-<link rel="stylesheet" href="{% static 'biometrics/table.css' %}">
+<link rel="stylesheet" href="{% static 'biometrics/styles/vendor/c3.min.css' %}">
+<link rel="stylesheet" href="{% static 'biometrics/styles/biometrics_chart.css' %}">
+{% endblock %}
+
+{% block scripts %}
+<script src="https://d3js.org/d3.v5.min.js"></script>
+<script src="{% static 'biometrics/scripts/vendor/c3.min.js' %}"></script>
+
+<script>
+    var data = JSON.parse('{{ data|safe }}');
+</script>
+<script src="{% static 'biometrics/scripts/biometric_chart.js' %}"></script>
 {% endblock %}
 
 {% block title %}
@@ -17,8 +28,6 @@ Client biometrics
         <h3>Height: {{ client.height }}"; Ideal Weight: {{ client.ideal_weight }} lbs; Usual Weight: {{ client.usual_weight }} lbs</h3>
         <br>
     </div>
-    <div id="metrics-table">
-        {% include 'table.html' with col_names=dates rows=metrics %}
-    </div>
+    <div id="chart"></div>
 </div>
 {% endblock %}

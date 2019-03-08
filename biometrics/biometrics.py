@@ -80,7 +80,7 @@ def comparison_percentage(actual, ideal):
 
 
 def proportion(value, percentage):
-    return round(value * (percentage / 100), 2)
+    return round(value * (percentage / 100), 2) if percentage else None
 
 
 def thermic_effect_of_activity(bmr, bmr_multiple):

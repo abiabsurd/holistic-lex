@@ -1,6 +1,13 @@
 {% extends "base.html" %}
+{% load static %}
 
-{% block title %}Client biometrics{% endblock %}
+{% block css %}
+<link rel="stylesheet" href="{% static 'biometrics/table.css' %}">
+{% endblock %}
+
+{% block title %}
+Client biometrics
+{% endblock %}
 
 {% block body %}
 <div class="container">

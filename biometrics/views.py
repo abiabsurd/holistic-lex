@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404, render
 
 from biometrics.biometrics import (
-    get_bmr_multiple, ideal_protein, to_kg, to_cm, basal_metabolic_rate, hamwi_ideal_weight,
+    get_bmr_multiple, ideal_protein, to_kg, to_cm, basal_metabolic_rate,
     comparison_percentage, thermic_effect_of_activity, thermic_effect_of_food,
     total_energy_expenditure, proportion
 )
@@ -62,4 +62,5 @@ def client_metrics(request, pk=None):
             list(map(round_floats, (metrics[m].get(d) for d in dates))) for m in metrics
         ]
     }
+
     return render(request, 'client_metrics.html', context=context)

@@ -52,7 +52,7 @@ class Entry(models.Model):
     notes = models.TextField(null=True, blank=True)
 
     # OMRON MEASUREMENTS
-    weight = models.FloatField(help_text='lbs')
+    weight = models.FloatField(null=True, blank=True, help_text='lbs')
     bmi = models.FloatField(null=True, blank=True, verbose_name='body mass index')
     body_fat = models.FloatField(null=True, blank=True, help_text='%')
     skeletal_muscle = models.FloatField(null=True, blank=True, help_text='%')

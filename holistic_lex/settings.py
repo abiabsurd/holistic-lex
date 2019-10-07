@@ -11,8 +11,27 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
-
 import django_heroku
+import sentry_sdk
+# from sentry_sdk.integrations.django import DjangoIntegration
+
+if os.environ.get('DOTENV') in ('True', '1'):
+    from dotenv import load_dotenv
+    load_dotenv(verbose=True)
+
+DEBUG = os.environ.get('DEBUG') in ('True', '1')
+# ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS')
+# SECRET_KEY = os.environ.get('SECRET_KEY')
+
+# SENTRY_DSN = '''
+# https://049d229819574893a9f64686d07f6744:e38f1792aefb41af9b529932b63a8f10@sentry.io/1410717'
+# '''
+SENTRY_DSN = os.environ.get('SENTRY_DSN')
+if SENTRY_DSN:
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        integrations=[sentry_sdk.integrations.django.DjangoIntegration()]
+    )
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -68,7 +87,7 @@ WSGI_APPLICATION = 'holistic_lex.wsgi.application'
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
+    'local': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
@@ -98,7 +117,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/New_York'
 
 USE_I18N = True
 
@@ -111,3 +130,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# Configure Django App for Heroku.
+django_heroku.settings(locals())

@@ -1,8 +1,9 @@
 const chart = c3.generate({
     bindto: '#chart',
     data: {
-        x: 'dates',
-        columns: data
+//        x: 'dates',
+        xs: xs,
+        columns: columns
     },
     axis: {
         x: {
@@ -15,5 +16,6 @@ const chart = c3.generate({
     }
 });
 
+// show only the first metric on load
 chart.hide();
-chart.show(data[1][0]);
+chart.show(showOnLoad);

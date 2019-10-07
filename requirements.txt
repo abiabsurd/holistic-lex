@@ -5,6 +5,7 @@ django-heroku==0.3.1
 gunicorn==19.9.0
 psycopg2==2.7.7
 python-dateutil==2.8.0
+python-dotenv==0.10.3
 pytz==2018.9
 sentry-sdk==0.7.6
 six==1.12.0

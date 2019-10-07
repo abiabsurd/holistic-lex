@@ -11,7 +11,9 @@
 <script src="{% static 'biometrics/scripts/vendor/c3.min.js' %}"></script>
 
 <script>
-    var data = JSON.parse('{{ data|safe }}');
+    var showOnLoad = '{{ c3.showOnLoad }}';
+    var xs = JSON.parse('{{ c3.xs|safe }}');
+    var columns = JSON.parse('{{ c3.columns|safe }}');
 </script>
 <script src="{% static 'biometrics/scripts/biometric_chart.js' %}"></script>
 {% endblock %}
